@@ -330,17 +330,22 @@ if(checkout){
   const EJ=EBC.EMAILJS||{};
   const useEJ=!!(EJ.SERVICE_ID&&EJ.TEMPLATE_ID&&EJ.PUBLIC_KEY);
   const ownerBody={_subject:'New Edibrew order '+orderId+' - '+d.name,_template:'table',_captcha:'false',email:d.email,'Order ID':orderId,'Order details':details};
-  if(!useEJ)ownerBody._autoresponse='Thank you '+d.name+'! We have received your Edibrew order '+orderId+'.\n\n'+details+'\n\nWe will contact you shortly to confirm delivery. Estimated delivery: '+eta+'.';
-  const ownerP=jsonPost('https://formsubmit.co/ajax/'+ORDER_EMAIL,ownerBody).then(r=>{if(!r.ok)throw new Error('mail');return r.json();});
-  const buyerP=useEJ?fetch('https://api.emailjs.com/api/v1.0/email/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service_id:EJ.SERVICE_ID,template_id:EJ.TEMPLATE_ID,user_id:EJ.PUBLIC_KEY,
-   template_params:{to_email:d.email,to_name:d.name,order_id:orderId,order_items:itemsText,subtotal:'Rs '+c.sub,discount:c.disc?'Rs '+c.disc:'None',delivery:c.ship?'Rs '+c.ship:'Free',total:'Rs '+c.total,payment:payMethod,phone:d.phone,address:d.address+', '+d.city+', '+d.province,eta:eta,reply_to:ORDER_EMAIL}})}).then(r=>r.ok).catch(()=>false):Promise.resolve(true);
-  Promise.all([ownerP,buyerP])
-  .then(([o,mailed])=>{finish(mailed);location.href='thankyou.html';})
-  .catch(()=>{
-   finish();
-   showModal(`<div class="eb-ico">⚠️</div><h3>Order ${orderId} saved</h3><p>We could not send the confirmation email just now. Please send your order on WhatsApp so we can confirm it.</p><p>Total: <strong>${rupees(c.total)}</strong></p><div id="eb-actions"><a class="btn" target="_blank" rel="noopener" href="${waLink}">Send order on WhatsApp</a><button class="btn o" type="button" onclick="closeModal()">Close</button></div>`,false);
-  })
-  .finally(()=>{if(btn){btn.disabled=false;btn.textContent='Place order';}});
+  // The store notification always goes to the fixed store address. The buyer
+  // receipt uses EmailJS and the customer's checkout email. FormSubmit's
+  // autoresponse is not supported on AJAX submissions, so do not rely on it.
+  // Both requests are isolated so one provider failure cannot block the order.
+  const ownerP=jsonPost('https://formsubmit.co/ajax/'+encodeURIComponent(ORDER_EMAIL),ownerBody)
+    .then(async r=>{if(!r.ok)return false;const j=await r.json().catch(()=>null);return !!(j && (j.success===true || j.success==='true'));})
+    .catch(()=>false);
+  const buyerP=useEJ
+    ? fetch('https://api.emailjs.com/api/v1.0/email/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({service_id:EJ.SERVICE_ID,template_id:EJ.TEMPLATE_ID,user_id:EJ.PUBLIC_KEY,
+       template_params:{to_email:d.email,to_name:d.name,order_id:orderId,order_items:itemsText,subtotal:'Rs '+c.sub,discount:c.disc?'Rs '+c.disc:'None',delivery:c.ship?'Rs '+c.ship:'Free',total:'Rs '+c.total,payment:payMethod,phone:d.phone,address:d.address+', '+d.city+', '+d.province,eta:eta,reply_to:ORDER_EMAIL}})}).then(r=>r.ok).catch(()=>false)
+    : Promise.resolve(false); // Buyer email is disabled until EmailJS credentials are configured.
+  Promise.all([ownerP,buyerP]).then(([ownerMailed,buyerAccepted])=>{
+    finish(buyerAccepted);
+    try{const last=JSON.parse(sessionStorage.getItem('ebLastOrder')||'null');if(last&&last.id===orderId){last.ownerMailed=ownerMailed;last.buyerProvider=useEJ?'EmailJS':'FormSubmit autoresponse';sessionStorage.setItem('ebLastOrder',JSON.stringify(last));}}catch(e){}
+    location.href='thankyou.html';
+  }).finally(()=>{if(btn){btn.disabled=false;btn.textContent='Place order';}});
  });
 }
 const country=document.querySelector('#checkout-form [name="country"]');

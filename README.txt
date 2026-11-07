@@ -15,8 +15,8 @@ google-sheets-orders.gs = optional order log in Google Sheets (instructions insi
 
 DO THESE AFTER UPLOADING
 1. Done: your site address (https://shahzadfaran05-jpg.github.io/Edibrew./) is already set in all files.
-2. Place one test order. FormSubmit emails an activation link to muhammadfaranshahzad@gmail.com. Click it once, or order emails will not arrive.
-3. Set up the buyer confirmation email: follow buyer-email-setup.txt (10 minutes).
-4. Open config.js and fill in: real support hours, Instagram/Facebook/TikTok links, JazzCash/Easypaisa/bank details if you accept them.
-5. Check the policy pages (refund, shipping, food safety, terms, privacy) and edit any rule that is not true for your business.
-6. Submit sitemap.xml in Google Search Console.
+2. IMPORTANT: Open the inbox for muhammadfaranshahzad@gmail.com and search for the FormSubmit activation/verification email after the first form submission. Click its activation link. Until this is completed, FormSubmit will not deliver store order notifications. Also check Spam/Junk.
+4. Set up the buyer confirmation email (required for customer emails): follow buyer-email-setup.txt (10 minutes).
+5. Open config.js and fill in: real support hours, Instagram/Facebook/TikTok links, JazzCash/Easypaisa/bank details if you accept them.
+6. Check the policy pages (refund, shipping, food safety, terms, privacy) and edit any rule that is not true for your business.
+7. Submit sitemap.xml in Google Search Console.

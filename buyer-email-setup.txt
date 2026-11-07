@@ -1,7 +1,6 @@
 BUYER CONFIRMATION EMAIL - SETUP (free, about 10 minutes)
 =========================================================
-Every order already sends a basic confirmation to the buyer through FormSubmit.
-For a proper branded email with the right subject line, use EmailJS (free: 200 emails a month).
+Each order sends its store notification to the fixed address in config.js. The buyer confirmation is addressed dynamically to the email the customer enters at checkout. Customer confirmation emails require EmailJS credentials. FormSubmit autoresponse does not work with this site's AJAX checkout, so it is not used for buyer confirmations.
 
 1. Go to emailjs.com and create a free account.
 2. Email Services > Add New Service > choose Gmail > connect muhammadfaranshahzad@gmail.com. Copy the SERVICE ID (looks like service_xxxxxxx).
@@ -18,5 +17,4 @@ For a proper branded email with the right subject line, use EmailJS (free: 200 e
    Commit changes.
 6. Place a test order with your own email. You should receive the confirmation within a minute. Check spam once.
 
-If EMAILJS is left empty, the site uses the basic FormSubmit confirmation instead.
-Order emails to YOU always come through FormSubmit (activate it once, see README.txt).
+IMPORTANT: Until all three EMAILJS values are added to config.js, customers will see that their order was received but that the confirmation email could not be sent. Store order notifications continue to use FormSubmit. Activate the store FormSubmit address once (see README.txt).
