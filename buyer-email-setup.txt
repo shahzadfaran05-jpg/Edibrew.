@@ -1,0 +1,22 @@
+BUYER CONFIRMATION EMAIL - SETUP (free, about 10 minutes)
+=========================================================
+Every order already sends a basic confirmation to the buyer through FormSubmit.
+For a proper branded email with the right subject line, use EmailJS (free: 200 emails a month).
+
+1. Go to emailjs.com and create a free account.
+2. Email Services > Add New Service > choose Gmail > connect muhammadfaranshahzad@gmail.com. Copy the SERVICE ID (looks like service_xxxxxxx).
+3. Email Templates > Create New Template. Fill in:
+     To Email:   {{to_email}}
+     From Name:  Edibrew
+     Reply To:   {{reply_to}}
+     Subject:    Your Edibrew order {{order_id}} is received
+     Content:    click the "<>" (code) button and paste the whole content of emailjs-template.html
+   Save, then copy the TEMPLATE ID (looks like template_xxxxxxx).
+4. Account > General > copy your PUBLIC KEY.
+5. Open config.js on GitHub (pencil icon) and fill in:
+     EMAILJS: { SERVICE_ID: 'service_xxxxxxx', TEMPLATE_ID: 'template_xxxxxxx', PUBLIC_KEY: 'your_public_key' },
+   Commit changes.
+6. Place a test order with your own email. You should receive the confirmation within a minute. Check spam once.
+
+If EMAILJS is left empty, the site uses the basic FormSubmit confirmation instead.
+Order emails to YOU always come through FormSubmit (activate it once, see README.txt).
